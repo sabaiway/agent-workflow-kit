@@ -1,0 +1,46 @@
+{
+  "name": "@sabaiway/agent-workflow-kit",
+  "version": "1.0.0",
+  "description": "A portable, cross-agent memory & workflow system for AI coding agents. One command deploys docs/ai + an entry-point AGENTS.md + cap/archive/index enforcement into any project.",
+  "keywords": [
+    "ai-agents",
+    "claude-code",
+    "codex",
+    "cursor",
+    "windsurf",
+    "agents-md",
+    "workflow",
+    "skill",
+    "memory",
+    "developer-tools"
+  ],
+  "homepage": "https://github.com/sabaiway/agent-workflow-kit#readme",
+  "bugs": {
+    "url": "https://github.com/sabaiway/agent-workflow-kit/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sabaiway/agent-workflow-kit.git"
+  },
+  "license": "MIT",
+  "author": "sabaiway",
+  "type": "module",
+  "bin": {
+    "agent-workflow-kit": "bin/install.mjs"
+  },
+  "files": [
+    "bin/",
+    "SKILL.md",
+    "README.md",
+    "CHANGELOG.md",
+    "references/",
+    "launchers/",
+    "migrations/"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
