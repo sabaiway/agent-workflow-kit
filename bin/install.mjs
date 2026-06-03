@@ -89,9 +89,13 @@ Installs/refreshes the kit at ~/.claude/skills/agent-workflow-kit
   pre-existing non-kit launcher file (backed up first). init is additive — it never
   deletes your settings.
 
-After install, invoke the skill in your agent:
-  Claude Code / Codex:  /agent-workflow-kit
-  Windsurf Cascade:     /agent-workflow-kit`);
+After install, invoke the skill in your agent, inside a project:
+  first time in the project  ->  /agent-workflow-kit
+  project already has it     ->  /agent-workflow-kit upgrade
+  (Claude Code / Codex / Windsurf Cascade all use the same /agent-workflow-kit.)
+
+Re-running this npx command updates the kit's own files; /agent-workflow-kit
+upgrade then migrates a project's deployment to that version.`);
 };
 
 const main = async () => {
@@ -107,13 +111,14 @@ const main = async () => {
   }
 
   const target = resolveTarget(args.dir);
+  const wasPresent = existsSync(resolve(target, 'SKILL.md'));
   await mkdir(target, { recursive: true });
   await Promise.all(
     PAYLOAD.filter((entry) => existsSync(resolve(PKG_ROOT, entry))).map((entry) =>
       copyRecursive(resolve(PKG_ROOT, entry), resolve(target, entry)),
     ),
   );
-  console.log(`[agent-workflow-kit] installed v${version} -> ${tildify(target)}`);
+  console.log(`[agent-workflow-kit] ${wasPresent ? 'updated the kit to' : 'installed'} v${version} -> ${tildify(target)}`);
 
   // Wire non-Claude agents — best-effort; the launcher only touches tools you have.
   const launcher = resolve(target, 'launchers/install-launchers.sh');
@@ -130,7 +135,16 @@ const main = async () => {
     }
   }
 
-  console.log('\nNext: open your agent and run  /agent-workflow-kit');
+  // This command (de)installed the *kit* globally. Deploying it into a project is a
+  // separate, in-agent step — and which sub-command depends on whether that project
+  // already has the kit. Spell both out so it's unambiguous (see README "Use").
+  console.log(`
+Next — open your agent inside a project and run the skill:
+  • first time in this project  ->  /agent-workflow-kit
+  • project already has the kit  ->  /agent-workflow-kit upgrade
+
+This command only installs/updates the kit itself (in ${tildify(target)}).
+To update the kit later, re-run:  npx @sabaiway/agent-workflow-kit@latest init`);
 };
 
 main().catch((err) => {

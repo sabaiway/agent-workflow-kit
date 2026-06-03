@@ -1,6 +1,6 @@
 {
   "name": "@sabaiway/agent-workflow-kit",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A portable, cross-agent memory & workflow system for AI coding agents. One command deploys docs/ai + an entry-point AGENTS.md + cap/archive/index enforcement into any project.",
   "keywords": [
     "ai-agents",

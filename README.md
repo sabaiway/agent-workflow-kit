@@ -7,7 +7,7 @@
 *Bootstrap it once — then every future session reconstructs project context in seconds
 instead of re-reading your whole repo.*
 
-`v1.0.0`  ·  `Claude Code · Codex · Cursor · Windsurf`  ·  `Node ≥ 18`  ·  `kernel-only · English`
+`v1.1.0`  ·  `Claude Code · Codex · Cursor · Windsurf`  ·  `Node ≥ 18`  ·  `kernel-only · English`
 
 </div>
 
@@ -104,13 +104,15 @@ Two visibility modes, chosen at bootstrap: **visible** (committed) or **hidden**
 npx @sabaiway/agent-workflow-kit init
 ```
 
-Then invoke it in any project:
+Then invoke it **inside a project** — first time vs. already-deployed use different sub-commands:
 
-| Agent | Invoke |
-|-------|--------|
-| **Claude Code** | `/agent-workflow-kit` |
-| **Codex** | `/skills` menu → `agent-workflow-kit` |
-| **Windsurf** (Cascade) | `/agent-workflow-kit` |
+| Agent | First time in the project | Project already has the kit |
+|-------|---------------------------|-----------------------------|
+| **Claude Code** | `/agent-workflow-kit` | `/agent-workflow-kit upgrade` |
+| **Codex** | `/skills` menu → `agent-workflow-kit` | …→ `agent-workflow-kit upgrade` |
+| **Windsurf** (Cascade) | `/agent-workflow-kit` | `/agent-workflow-kit upgrade` |
+
+<sub>`/agent-workflow-kit` bootstraps a fresh deployment (and asks your **visibility** and **conversational language**); `/agent-workflow-kit upgrade` migrates an existing one to the kit's current version. The `npx … init` above is a third, separate thing — it updates the **kit itself**, not any project.</sub>
 
 **Upgrade the kit itself** later — same command with `@latest`:
 
@@ -163,7 +165,7 @@ command is printed).
 
 | Command | When | What happens |
 |---------|------|--------------|
-| `/agent-workflow-kit` | new / empty project | recon → **asks visible-or-hidden** → deploys `AGENTS.md` + `docs/ai/` filled with real recon data → installs enforcement → **asks before committing** |
+| `/agent-workflow-kit` | new / empty project | recon → **asks visible-or-hidden** + **conversational language** → deploys `AGENTS.md` + `docs/ai/` filled with real recon data → installs enforcement → **asks before committing** |
 | `/agent-workflow-kit upgrade` | existing deployment | reads `docs/ai/.workflow-version`, shows the changelog diff, applies migrations, re-stamps |
 
 It **never auto-commits** and **never overwrites** an existing `AGENTS.md` without asking.

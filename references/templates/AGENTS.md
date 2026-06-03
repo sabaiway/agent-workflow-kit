@@ -6,6 +6,14 @@
 
 ---
 
+## 🗣️ Communication language
+
+> **Talk to the user in {{COMM_LANGUAGE}}** — every question, explanation, summary, and status update.
+> Keep code, identifiers, file paths, shell commands, log output, and abbreviations in their **source language** (usually English) — translating them breaks copy-paste, search, and tooling.
+> This sets the **dialogue** language only. The files in `docs/ai/` and this entry point stay in English (kernel is English-only, for cross-agent / cross-team portability).
+
+---
+
 ## 🧭 Memory Map
 
 All project knowledge lives in `docs/ai/`. Layered, lazy-loaded context:
