@@ -2,7 +2,7 @@
 
 > **Execution protocol for AI agents working on this project.**
 > **This file is your entry point. Read it first, then follow the Memory Map.**
-> `AGENTS.md` is the cross-agent standard — Codex / Cursor / Windsurf / Copilot read it natively. Tool-specific aliases (e.g. `CLAUDE.md` for Claude Code) are symlinks to this file — single source, no duplication.
+> `AGENTS.md` is the cross-agent standard — Codex / Cursor / Devin Desktop / Copilot read it natively. Tool-specific aliases (e.g. `CLAUDE.md` for Claude Code) are symlinks to this file — single source, no duplication.
 
 ---
 
@@ -11,6 +11,15 @@
 > **Talk to the user in {{COMM_LANGUAGE}}** — every question, explanation, summary, and status update.
 > Keep code, identifiers, file paths, shell commands, log output, and abbreviations in their **source language** (usually English) — translating them breaks copy-paste, search, and tooling.
 > This sets the **dialogue** language only. The files in `docs/ai/` and this entry point stay in English (kernel is English-only, for cross-agent / cross-team portability).
+
+---
+
+## ✍️ Attribution
+
+> **Agent attribution: {{AGENT_ATTRIBUTION}}** (chosen at setup).
+> **off** → never attribute work to the agent, AI, or the model: no `Co-Authored-By` trailers, no "Generated with …" footers, no AI/agent/model mentions in code, comments, commit messages, PR titles/bodies, branch names, or docs. Author everything as the human.
+> **on** → the agent may add its standard `Co-Authored-By` trailer / footer per your tooling defaults.
+> Claude Code also honours `includeCoAuthoredBy` in `.claude/settings.json`; this block binds every agent for everything written by hand.
 
 ---
 

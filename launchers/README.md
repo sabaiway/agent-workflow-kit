@@ -13,8 +13,8 @@ already — these launchers make the *bootstrapper itself* runnable from non-Cla
 |-------|-----------|---------|--------|
 | **Claude Code** | native skill | already at `~/.claude/skills/agent-workflow-kit/` | `/agent-workflow-kit` |
 | **Codex** | native skill (same `SKILL.md` cross-agent standard) | symlink the kit into a Codex skill scope: `ln -sfn <KIT_DIR> ~/.codex/skills/agent-workflow-kit` (or `~/.agents/skills/`) | Codex `/skills` menu → `agent-workflow-kit` |
-| **Windsurf** | workflow (Cascade doesn't read `SKILL.md`) | `sed "s#<KIT_DIR>#$KIT#g" <KIT_DIR>/launchers/windsurf-workflow.md > ~/.codeium/windsurf/global_workflows/agent-workflow-kit.md` | `/agent-workflow-kit` in Cascade |
-| **Cursor** (bonus) | command/rule | point a `.cursor/commands` entry at `<KIT_DIR>/SKILL.md` (same pattern as the Windsurf launcher) | the command name |
+| **Devin Desktop** (formerly Windsurf) | workflow (Devin Local / Cascade doesn't read `SKILL.md`) | `sed "s#<KIT_DIR>#$KIT#g" <KIT_DIR>/launchers/windsurf-workflow.md > ~/.codeium/windsurf/global_workflows/agent-workflow-kit.md` | `/agent-workflow-kit` in Devin Local |
+| **Cursor** (bonus) | command/rule | point a `.cursor/commands` entry at `<KIT_DIR>/SKILL.md` (same pattern as the Devin Desktop launcher) | the command name |
 | **Any other** | manual | tell the agent: "execute the bootstrap in `<KIT_DIR>/SKILL.md`" | — |
 
 Or run [`install-launchers.sh`](install-launchers.sh) — it auto-detects which of these tools

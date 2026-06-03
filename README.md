@@ -7,7 +7,14 @@
 *Bootstrap it once — then every future session reconstructs project context in seconds
 instead of re-reading your whole repo.*
 
-`v1.1.0`  ·  `Claude Code · Codex · Cursor · Windsurf`  ·  `Node ≥ 18`  ·  `kernel-only · English`
+[![npm version](https://img.shields.io/npm/v/@sabaiway/agent-workflow-kit?logo=npm)](https://www.npmjs.com/package/@sabaiway/agent-workflow-kit)
+[![npm downloads](https://img.shields.io/npm/dm/@sabaiway/agent-workflow-kit)](https://www.npmjs.com/package/@sabaiway/agent-workflow-kit)
+[![license](https://img.shields.io/npm/l/@sabaiway/agent-workflow-kit)](./LICENSE)
+[![node](https://img.shields.io/node/v/@sabaiway/agent-workflow-kit)](https://nodejs.org)
+
+`v1.2.0`  ·  `Node ≥ 18`  ·  `kernel-only · English`
+
+**Works with any tool that reads `AGENTS.md`** — Claude Code · Codex · Cursor · Devin Desktop (formerly Windsurf) · GitHub Copilot · Gemini CLI · Cline · Aider · and 20+ more.
 
 </div>
 
@@ -98,7 +105,7 @@ Two visibility modes, chosen at bootstrap: **visible** (committed) or **hidden**
 
 ## 🚀 Install
 
-**One command** installs the kit into `~/.claude/skills/` and wires any Codex / Windsurf you have:
+**One command** installs the kit into `~/.claude/skills/` and wires any Codex / Devin Desktop you have:
 
 ```bash
 npx @sabaiway/agent-workflow-kit init
@@ -110,9 +117,9 @@ Then invoke it **inside a project** — first time vs. already-deployed use diff
 |-------|---------------------------|-----------------------------|
 | **Claude Code** | `/agent-workflow-kit` | `/agent-workflow-kit upgrade` |
 | **Codex** | `/skills` menu → `agent-workflow-kit` | …→ `agent-workflow-kit upgrade` |
-| **Windsurf** (Cascade) | `/agent-workflow-kit` | `/agent-workflow-kit upgrade` |
+| **Devin Desktop** (Windsurf · Devin Local) | `/agent-workflow-kit` | `/agent-workflow-kit upgrade` |
 
-<sub>`/agent-workflow-kit` bootstraps a fresh deployment (and asks your **visibility** and **conversational language**); `/agent-workflow-kit upgrade` migrates an existing one to the kit's current version. The `npx … init` above is a third, separate thing — it updates the **kit itself**, not any project.</sub>
+<sub>`/agent-workflow-kit` bootstraps a fresh deployment (and asks your **visibility**, **conversational language**, and whether the agent may **attribute work to itself / AI** — default off); `/agent-workflow-kit upgrade` migrates an existing one to the kit's current version. The `npx … init` above is a third, separate thing — it updates the **kit itself**, not any project.</sub>
 
 **Upgrade the kit itself** later — same command with `@latest`:
 
@@ -134,7 +141,7 @@ cd ~/.claude/skills/agent-workflow-kit
 bash launchers/install-launchers.sh
 ```
 
-`install-launchers.sh` auto-detects Codex **and** Windsurf — it only touches tools you actually
+`install-launchers.sh` auto-detects Codex **and** Devin Desktop — it only touches tools you actually
 have. See [`launchers/README.md`](launchers/README.md) for the full matrix (incl. Cursor / any
 other agent). The manual path works identically but **isn't reflected in install stats** — prefer
 `npx` if you don't mind.
@@ -149,9 +156,9 @@ other agent). The manual path works identically but **isn't reflected in install
 |------|------|
 | `~/.claude/skills/agent-workflow-kit/` | the kit itself (refreshed on every `init`) |
 | `~/.codex/skills/agent-workflow-kit` | a symlink — only if you have Codex |
-| `…/global_workflows/agent-workflow-kit.md` | a managed file — only if you have Windsurf |
+| `…/global_workflows/agent-workflow-kit.md` | a managed file — only if you have Devin Desktop |
 
-Your other Codex skills and Windsurf workflows are never touched. If one of those exact slots
+Your other Codex skills and Devin Desktop workflows are never touched. If one of those exact slots
 already holds a file the kit didn't write, it is **left alone** and you're told — re-run with
 `--force` to replace it (the original is first copied to `*.bak.<timestamp>` and the restore
 command is printed).
@@ -165,7 +172,7 @@ command is printed).
 
 | Command | When | What happens |
 |---------|------|--------------|
-| `/agent-workflow-kit` | new / empty project | recon → **asks visible-or-hidden** + **conversational language** → deploys `AGENTS.md` + `docs/ai/` filled with real recon data → installs enforcement → **asks before committing** |
+| `/agent-workflow-kit` | new / empty project | recon → **asks visible-or-hidden** + **conversational language** + **agent attribution** (default off) → deploys `AGENTS.md` + `docs/ai/` filled with real recon data → installs enforcement → **asks before committing** |
 | `/agent-workflow-kit upgrade` | existing deployment | reads `docs/ai/.workflow-version`, shows the changelog diff, applies migrations, re-stamps |
 
 It **never auto-commits** and **never overwrites** an existing `AGENTS.md` without asking.
@@ -191,8 +198,8 @@ Enforcement ships as dependency-free **Node** scripts (`node --test`, no package
 ## 🤝 Cross-agent by design
 
 One kit, three front doors — the *output* (`AGENTS.md` + `docs/ai/`) is read natively by
-Codex, Cursor, Windsurf, Copilot, Gemini CLI & 20+ tools, and the *bootstrapper* runs from
-Claude Code, Codex, or Windsurf. No logic is duplicated per tool.
+Codex, Cursor, Devin Desktop, Copilot, Gemini CLI & 20+ tools, and the *bootstrapper* runs from
+Claude Code, Codex, or Devin Desktop. No logic is duplicated per tool.
 
 ---
 
@@ -207,7 +214,7 @@ agent-workflow-kit/
     ├── templates/   ← AGENTS.md + every docs/ai file
     ├── scripts/     ← caps / archive / index + tests
     └── planning.md  ← plan lifecycle + continuity
-├── launchers/       ← Codex / Windsurf / Cursor entries
+├── launchers/       ← Codex / Devin Desktop / Cursor entries
 └── migrations/      ← per-version upgrade steps
 ```
 

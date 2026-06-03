@@ -4,7 +4,7 @@
 //   npx @sabaiway/agent-workflow-kit init
 //
 // Copies the kit into the canonical skill home (~/.claude/skills/agent-workflow-kit),
-// then runs the cross-agent launcher (auto-detects Codex / Windsurf — only touches tools
+// then runs the cross-agent launcher (auto-detects Codex / Devin Desktop — only touches tools
 // you actually have). Re-running refreshes the skill to this package's version, which is
 // how you upgrade the *skill files* themselves:
 //
@@ -85,14 +85,14 @@ Usage:
 
 Installs/refreshes the kit at ~/.claude/skills/agent-workflow-kit
   (override with --dir <path> or AGENT_WORKFLOW_KIT_DIR), then wires any
-  Codex / Windsurf you have. --no-launchers skips that wiring; --force replaces a
+  Codex / Devin Desktop you have. --no-launchers skips that wiring; --force replaces a
   pre-existing non-kit launcher file (backed up first). init is additive — it never
   deletes your settings.
 
 After install, invoke the skill in your agent, inside a project:
   first time in the project  ->  /agent-workflow-kit
   project already has it     ->  /agent-workflow-kit upgrade
-  (Claude Code / Codex / Windsurf Cascade all use the same /agent-workflow-kit.)
+  (Claude Code / Codex / Devin Desktop all use the same /agent-workflow-kit.)
 
 Re-running this npx command updates the kit's own files; /agent-workflow-kit
 upgrade then migrates a project's deployment to that version.`);
@@ -123,14 +123,14 @@ const main = async () => {
   // Wire non-Claude agents — best-effort; the launcher only touches tools you have.
   const launcher = resolve(target, 'launchers/install-launchers.sh');
   if (args.noLaunchers) {
-    console.log('[agent-workflow-kit] --no-launchers: skipped Codex/Windsurf wiring.');
+    console.log('[agent-workflow-kit] --no-launchers: skipped Codex/Devin Desktop wiring.');
   } else if (process.platform === 'win32') {
     console.log('[agent-workflow-kit] Windows: skipped POSIX launcher. Claude Code reads the kit natively.');
   } else if (existsSync(launcher)) {
     const launcherArgs = args.force ? [launcher, '--force'] : [launcher];
     const launcherRun = spawnSync('bash', launcherArgs, { stdio: 'inherit' });
     if (launcherRun.status !== 0) {
-      console.warn('[agent-workflow-kit] launcher step skipped/failed — run it by hand if you use Codex/Windsurf:');
+      console.warn('[agent-workflow-kit] launcher step skipped/failed — run it by hand if you use Codex/Devin Desktop:');
       console.warn(`  bash ${tildify(launcher)}`);
     }
   }

@@ -6,7 +6,7 @@
 #   - Writes only the kit's OWN namespaced slots:
 #       ~/.codex/skills/agent-workflow-kit                     (a symlink)
 #       ~/.codeium/.../global_workflows/agent-workflow-kit.md  (a managed file)
-#   - NEVER touches your other Codex skills or Windsurf workflows.
+#   - NEVER touches your other Codex skills or Devin Desktop workflows.
 #   - If one of those exact slots already holds a file the kit did NOT write, it is
 #     left untouched and you are told. Re-run with --force to replace it; --force first
 #     backs the file up (.bak.<timestamp>) and prints the command to restore it.
@@ -61,34 +61,36 @@ if command -v codex >/dev/null 2>&1 || [ -d "$HOME/.codex" ]; then
   fi
 fi
 
-# --- Windsurf: needs a workflow launcher (Cascade does not read SKILL.md).
-if command -v windsurf >/dev/null 2>&1 || [ -d "$HOME/.codeium/windsurf" ]; then
+# --- Devin Desktop (formerly Windsurf): needs a workflow launcher (Devin Local, ex-Cascade,
+#     does not read SKILL.md). Cognition rebranded Windsurf -> Devin Desktop on 2026-06-02;
+#     the ~/.codeium/windsurf/ paths are unchanged, so this launcher keeps working as-is.
+if command -v devin >/dev/null 2>&1 || command -v windsurf >/dev/null 2>&1 || [ -d "$HOME/.codeium/windsurf" ]; then
   WF_DIR="$HOME/.codeium/windsurf/global_workflows"
   mkdir -p "$WF_DIR"
   WF="$WF_DIR/agent-workflow-kit.md"
   write_wf() { sed "s#<KIT_DIR>#$KIT_DIR#g" "$KIT_DIR/launchers/windsurf-workflow.md" > "$WF"; }
   if [ ! -e "$WF" ]; then
     write_wf
-    echo "[launchers] Windsurf → wrote $WF (/agent-workflow-kit in Cascade)"
+    echo "[launchers] Devin Desktop → wrote $WF (/agent-workflow-kit in Devin Local / Cascade)"
     installed_any=1
   elif grep -q "$MARKER" "$WF" 2>/dev/null; then
     write_wf
-    echo "[launchers] Windsurf → refreshed $WF (kit-managed)"
+    echo "[launchers] Devin Desktop → refreshed $WF (kit-managed)"
     installed_any=1
   elif [ "$FORCE" -eq 1 ]; then
     backup_and_note "$WF"
     write_wf
-    echo "[launchers] Windsurf → replaced (forced) $WF"
+    echo "[launchers] Devin Desktop → replaced (forced) $WF"
     installed_any=1
   else
-    echo "[launchers] Windsurf ⚠ $WF exists and was not written by the kit — left untouched."
+    echo "[launchers] Devin Desktop ⚠ $WF exists and was not written by the kit — left untouched."
     echo "[launchers]            re-run with --force to replace it (a backup is made first)."
     skipped_any=1
   fi
 fi
 
 if [ "$installed_any" -eq 0 ] && [ "$skipped_any" -eq 0 ]; then
-  echo "[launchers] No Codex/Windsurf install detected. Claude Code (if present) already has the kit natively."
+  echo "[launchers] No Codex/Devin Desktop install detected. Claude Code (if present) already has the kit natively."
 fi
 echo "[launchers] Uninstall later: delete the kit's own slot(s) above (the symlink / the agent-workflow-kit.md file)."
 echo "[launchers] done."
