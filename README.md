@@ -12,7 +12,7 @@ instead of re-reading your whole repo.*
 [![license](https://img.shields.io/npm/l/@sabaiway/agent-workflow-kit)](./LICENSE)
 [![node](https://img.shields.io/node/v/@sabaiway/agent-workflow-kit)](https://nodejs.org)
 
-`v1.2.0`  ·  `Node ≥ 18`  ·  `kernel-only · English`
+`v1.3.0`  ·  `Node ≥ 18`  ·  `kernel-only · English`
 
 **Works with any tool that reads `AGENTS.md`** — Claude Code · Codex · Cursor · Devin Desktop (formerly Windsurf) · GitHub Copilot · Gemini CLI · Cline · Aider · and 20+ more.
 
@@ -213,6 +213,7 @@ agent-workflow-kit/
 ├── references/
     ├── templates/   ← AGENTS.md + every docs/ai file
     ├── scripts/     ← caps / archive / index + tests
+    ├── contracts.md ← visibility / language / attribution rules
     └── planning.md  ← plan lifecycle + continuity
 ├── launchers/       ← Codex / Devin Desktop / Cursor entries
 └── migrations/      ← per-version upgrade steps

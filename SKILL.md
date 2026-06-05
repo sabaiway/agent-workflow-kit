@@ -3,7 +3,7 @@ name: agent-workflow-kit
 description: Deploy or upgrade a portable AI-agent memory-and-workflow system in any project. Use when the user wants to bootstrap `docs/ai/` + an entry-point `AGENTS.md` (+ `CLAUDE.md` alias) + cap/archive/index enforcement in a new or existing repo, set up the Memory Map and session protocols, install the docs-rotation pre-commit hook, or run `/agent-workflow-kit` / `/agent-workflow-kit upgrade`. Triggers on phrases like "set up the memory system", "deploy the AI workflow here", "bootstrap docs/ai", "upgrade the workflow".
 disable-model-invocation: true
 metadata:
-  version: '1.2.0'
+  version: '1.3.0'
 ---
 
 # agent-workflow-kit
@@ -29,6 +29,8 @@ Pick the mode from the user's invocation. Auto-detect an existing `docs/ai/` to 
 
 > Bundled sources below (templates, scripts) live in **this skill's own directory** — `${CLAUDE_SKILL_DIR}/` in Claude Code, or the folder containing this `SKILL.md` in Codex / other agents. Use that as the copy/read source; the working directory is the **target project**, not the skill.
 
+> The three setup questions (steps 2–4) are decisions only the user can make and are hard to reverse after a commit. Ask each as a **structured multiple-choice prompt where your agent supports it** (`AskUserQuestion` in Claude Code — one option per choice, recommended one first), otherwise in prose — and **wait for the answer before writing anything**.
+
 1. **Recon (read-only).** Before writing anything:
    - `package.json` / `pyproject.toml` / `go.mod` / `Cargo.toml` → stack, package manager, scripts.
    - `ls -la` root → `README`, existing `AGENTS.md`/`CLAUDE.md`, CI configs, linter/formatter configs.
@@ -36,9 +38,9 @@ Pick the mode from the user's invocation. Auto-detect an existing `docs/ai/` to 
    - `src/` (or equivalent) 2–3 levels deep → modules, routes/pages, components, services, types.
    - Tests (framework, location, E2E?) and linter rules.
    - Record: stack, package manager, daily commands (`dev`/`test`/`lint`/`type-check`), routes/pages, architecture layers.
-2. **Choose visibility — ASK the user explicitly and wait for the answer, before writing anything.** This decides what gets tracked and is hard to reverse after a commit, so never assume the default silently: `visible` (committed — canonical, recommended) or `hidden` (in-tree, hidden via `~/.gitignore_global`). See *Visibility contract*.
-3. **Choose conversational language — ASK the user explicitly and wait for the answer.** Which language should the agent *talk to them* in — questions, explanations, summaries, status updates? Offer the language they're already writing in as the default. Carry the answer into the `{{COMM_LANGUAGE}}` slot of the *Communication language* block when `AGENTS.md` is created (step 5). See *Communication contract*. This sets the **dialogue** language only — never the files.
-4. **Choose agent attribution — ASK the user explicitly and wait for the answer.** May the agent attribute work to itself / to AI — `Co-Authored-By` trailers, "Generated with …" footers, "AI"/agent/model mentions in code, comments, commit messages, PR titles/bodies, or docs? **Default to `off`** (no agent/AI mention anywhere) unless they opt in — people are routinely surprised to find an AI listed as a repo contributor. Carry the answer into the `{{AGENT_ATTRIBUTION}}` slot of the *Attribution* block when `AGENTS.md` is created (step 5). **If `off` and the project uses Claude Code**, also set `"includeCoAuthoredBy": false` in the project's `.claude/settings.json` (create it if absent) — the trailer is added by the harness, so a doc directive alone won't stop it. See *Attribution contract*.
+2. **Choose visibility — ASK the user explicitly and wait for the answer, before writing anything.** This decides what gets tracked and is hard to reverse after a commit, so never assume the default silently: `visible` (committed — canonical, recommended) or `hidden` (in-tree, hidden via `~/.gitignore_global`). See [Visibility contract](references/contracts.md#visibility-contract).
+3. **Choose conversational language — ASK the user explicitly and wait for the answer.** Which language should the agent *talk to them* in — questions, explanations, summaries, status updates? Offer the language they're already writing in as the default. Carry the answer into the `{{COMM_LANGUAGE}}` slot of the *Communication language* block when `AGENTS.md` is created (step 5). See [Communication contract](references/contracts.md#communication-contract). This sets the **dialogue** language only — never the files.
+4. **Choose agent attribution — ASK the user explicitly and wait for the answer.** May the agent attribute work to itself / to AI — `Co-Authored-By` trailers, "Generated with …" footers, "AI"/agent/model mentions in code, comments, commit messages, PR titles/bodies, or docs? **Default to `off`** (no agent/AI mention anywhere) unless they opt in — people are routinely surprised to find an AI listed as a repo contributor. Carry the answer into the `{{AGENT_ATTRIBUTION}}` slot of the *Attribution* block when `AGENTS.md` is created (step 5). **If `off` and the project uses Claude Code**, also set `"includeCoAuthoredBy": false` in the project's `.claude/settings.json` (create it if absent) — the trailer is added by the harness, so a doc directive alone won't stop it. See [Attribution contract](references/contracts.md#attribution-contract).
 5. **Entry-point doc.** If `AGENTS.md` / `CLAUDE.md` already exist (step-1 recon), do **not** overwrite — show the user and ask whether to merge or replace. Otherwise create `AGENTS.md` (the cross-agent standard — Codex / Cursor / Devin Desktop / Copilot read it natively) from `${CLAUDE_SKILL_DIR}/references/templates/AGENTS.md`, and symlink `CLAUDE.md -> AGENTS.md` (`ln -s AGENTS.md CLAUDE.md`) for Claude Code — single source, no duplication. For nested context, add a subdir `AGENTS.md` (+ a `CLAUDE.md` symlink beside it for Claude Code).
 6. **Deploy `docs/ai/`.** Create the 11 files + `pages/` from `${CLAUDE_SKILL_DIR}/references/templates/`. Keep each file's frontmatter (`type / lastUpdated / scope / staleAfter / owner / maxLines`).
 7. **Fill templates** per the table below.
@@ -63,49 +65,29 @@ Fill strategy:
 2. Compare to this skill's `metadata.version` (frontmatter). If equal → report "up to date" and stop.
 3. Show the relevant `${CLAUDE_SKILL_DIR}/CHANGELOG.md` diff (entries newer than the project's stamp).
 4. Apply `${CLAUDE_SKILL_DIR}/migrations/<version>-<slug>.md` in **semver order**, only those newer than the project's stamp. Migrations are **idempotent** — safe to re-run.
-5. Reconcile drift: add any kernel files/scripts the project is missing; never clobber project-authored content (their `decisions.md`, `known_issues.md`, page specs stay). If `AGENTS.md` has no *Communication language* block (pre-1.1.0 deployment), **ask the user their conversational language** and insert the block — see `migrations/1.1.0-communication-language.md`. If it has no *Attribution* block (pre-1.2.0 deployment), **ask whether the agent may attribute work to itself / AI** and insert the block (defaulting to `off`) — see `migrations/1.2.0-agent-attribution.md`.
+5. Reconcile drift: add any kernel files/scripts the project is missing; never clobber project-authored content (their `decisions.md`, `known_issues.md`, page specs stay). Any user question a migration raises follows the same rule as bootstrap — **structured multiple-choice where supported** (`AskUserQuestion` in Claude Code), otherwise prose. If `AGENTS.md` has no *Communication language* block (pre-1.1.0 deployment), **ask the user their conversational language** and insert the block — see `migrations/1.1.0-communication-language.md`. If it has no *Attribution* block (pre-1.2.0 deployment), **ask whether the agent may attribute work to itself / AI** and insert the block (defaulting to `off`) — see `migrations/1.2.0-agent-attribution.md`.
 6. Re-stamp `docs/ai/.workflow-version` to the skill's `version`. Report changes; **ask before committing**.
 
 ---
 
-## Visibility contract
+## Gotchas
 
-The user chooses at bootstrap whether the AI artifacts are visible in the repo or hidden — an **explicit up-front question** (step 2), never an assumed default. The two modes then diverge:
+The non-obvious traps — scan these before bootstrapping or upgrading. Each is also enforced inline in the procedure above; this is the consolidated high-signal list.
 
-- **visible** — artifacts are committed. Wire the project's `package.json` scripts (`docs:check` / `docs:index` / `docs:index:check` / `docs:archive` / `docs:archive:check` / `docs:archive:issues` / `docs:archive:issues:check` / `prepare: node scripts/install-git-hooks.mjs`) and add a minimal `.gitignore` (`docs/plans/`, `.claude/settings.local.json`). This is the canonical model.
-- **hidden** (in-tree) — same files on disk, but the repo "looks normal": append the artifact paths (`AGENTS.md`, `CLAUDE.md`, `docs/ai/`, `docs/plans/`, `scripts/*.mjs` you added, `docs/ai/.workflow-version`) to the global excludes file git **already uses** (`git config --get core.excludesFile`); if none is set, point it at `~/.gitignore_global` (`git config --global core.excludesFile ~/.gitignore_global`) and append there. **Verify `git status` shows the artifacts as ignored** afterwards. **Do not edit `package.json`** — that is a tracked change and would leak; the pre-commit hook (always untracked in `.git/hooks/`) calls the scripts via `node scripts/<x>.mjs` directly.
-
-Not in this version: a fully-external hidden mode (artifacts relocated outside the repo tree). Deferred to a later release + migration.
-
----
-
-## Communication contract
-
-The user chooses at bootstrap (step 3) which language the agent **talks to them** in. The choice is recorded in the *Communication language* block of the project's `AGENTS.md`, so every agent that reads the entry point honours it — and stops drifting between languages mid-session.
-
-Scope — **dialogue only**:
-
-- **In the chosen language** — everything the agent produces *for the user to read*: questions, explanations, plan summaries, status updates, commit-message prose if asked, review notes.
-- **Always in their source language (usually English)** — code, identifiers, file paths, shell commands, log/console output, error strings, config keys, and abbreviations/acronyms. Translating these breaks copy-paste, search, and tooling.
-- **Files stay English** — the deployed `docs/ai/` files, `AGENTS.md`, and this kernel are English-only regardless of the chosen language (cross-agent / cross-team portability). The conversational language is about the *chat*, not the *artifacts*.
-
-Default to the language the user is already writing in; confirm rather than assume. On `upgrade`, a pre-1.1.0 deployment with no block gets one (the agent asks).
+- **Source vs target directory.** Templates and scripts are read from the skill's own dir (`${CLAUDE_SKILL_DIR}/` in Claude Code, the `SKILL.md` folder elsewhere). The **working directory is the target project** — never write kernel files back into the skill.
+- **The `Co-Authored-By` trailer is added by the harness, not by prose.** When attribution is `off`, a doc directive alone won't stop it — for Claude Code you **must** also set `"includeCoAuthoredBy": false` in the project's `.claude/settings.json` (create it if absent). Other tools: disable their equivalent co-author/footer setting.
+- **Hidden mode must never touch `package.json`.** Editing it is a *tracked* change and leaks the whole system. Hidden mode wires nothing into `package.json`; the pre-commit hook (untracked in `.git/hooks/`) calls `node scripts/<x>.mjs` directly. After hiding, **verify `git status` shows the artifacts as ignored**.
+- **`CLAUDE.md` is a symlink, not a copy.** `ln -s AGENTS.md CLAUDE.md` — single source, no duplication. A copy drifts; a symlink can't.
+- **Never overwrite an existing entry point or hook.** If `AGENTS.md` / `CLAUDE.md` already exist, or the installer reports a pre-existing non-marker git hook, **stop and ask** the user to merge vs replace — don't clobber.
+- **No Node runtime → skip enforcement.** If the project has no Node (recon step 1), skip bootstrap steps 8–9 (scripts + hook) and follow the cap/archive/index policy manually, or port the scripts to the project's language.
+- **Conversational language never translates artifacts.** It governs *dialogue only*. Code, identifiers, paths, commands, log output, abbreviations, and every deployed `docs/ai/` / `AGENTS.md` file stay English. See [Communication contract](references/contracts.md#communication-contract).
+- **Never auto-commit.** Report quality-gate results and wait for explicit approval — in both modes.
 
 ---
 
-## Attribution contract
+## Setup contracts
 
-The user chooses at bootstrap (step 4) whether the agent may **attribute work to itself or to AI**. The choice is recorded in the *Attribution* block of the project's `AGENTS.md`, so every agent that reads the entry point honours it. **Default is `off`** — people are routinely surprised to find an AI listed as a repo contributor (a `Co-Authored-By` trailer is enough to do it), so opt-in, never opt-out.
-
-When attribution is **`off`**, no mention of the agent, AI, or the model appears **anywhere**:
-
-- **No `Co-Authored-By` trailers** and **no "Generated with …" footers** on commits or PRs.
-- **No AI/agent/model references** in code, comments, commit messages, PR titles/bodies, branch names, or `docs/` prose. The work reads as the human author's.
-- **Two enforcement layers** — the *Attribution* block binds everything an agent writes **by hand**; the automatic `Co-Authored-By` trailer is added by the **harness**, not the prose, so for **Claude Code** the kit also sets `"includeCoAuthoredBy": false` in the project's `.claude/settings.json`. Other tools: disable their equivalent co-author/footer setting if present.
-
-When **`on`**, the agent may add its standard trailer / footer per the user's tooling defaults. This block is about *attribution*, not authorship of the actual changes — quality, tests, and the "ask before commit" rule are unchanged either way.
-
-On `upgrade`, a pre-1.2.0 deployment with no block gets one (the agent asks, defaulting to `off`).
+The three setup choices — **visibility** (step 2), **conversational language** (step 3), and **agent attribution** (step 4) — each have a full contract in [`references/contracts.md`](references/contracts.md). Load it when you need the complete rule (e.g. while filling the matching `AGENTS.md` block, or when an `upgrade` migration touches one). Defaults, in brief: visibility = `visible` (committed); language = whatever the user is already writing in; attribution = `off`. Ask each as a structured multiple-choice prompt where supported (`AskUserQuestion` in Claude Code), otherwise in prose.
 
 ---
 
@@ -149,6 +131,7 @@ Deploy these into `AGENTS.md`; remove rows that don't apply to the stack.
 
 ## References
 
+- [`references/contracts.md`](references/contracts.md) — the three setup contracts (visibility, conversational language, agent attribution) in full; the *Setup contracts* section above points here.
 - [`references/planning.md`](references/planning.md) — plan vocabulary (Plan→Phase→Step→Substep), lifecycle, `queue.md` series-index, mandatory Cleanup, session-continuity heuristic.
 - [`references/templates/`](references/templates/) — stack-agnostic `AGENTS.md`, `agent_rules.md`, and all `docs/ai/` files to deploy.
 - [`references/scripts/`](references/scripts/) — the Node enforcement scripts (caps + staleness + index-freshness gate, 3-tier archive, hook installer) and their unit tests.
